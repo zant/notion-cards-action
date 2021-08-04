@@ -6,6 +6,7 @@ import (
   "io/ioutil"
   "log"
   "os"
+  "regexp"
   "strings"
 
   "github.com/go-playground/webhooks/v6/github"
@@ -21,6 +22,14 @@ type Page struct {
 }
 
 type CardStatus string
+
+func extractNotionLink(body string) {
+  markdownRegex := regexp.MustCompile(`\[[^][]+]\((https?://(www.notion.so|notion.so)[^()]+)\)`)
+  results := markdownRegex.FindAllStringSubmatch(body, -1)
+  for v := range results {
+    fmt.Printf("%q\n", results[v][1])
+  }
+}
 
 const cardLinked = "https://www.notion.so/Card-ef2e02bf5f0f4a37a6c7fe48ff5de280"
 
@@ -52,7 +61,8 @@ func main() {
 
   json.Unmarshal(data, &payload)
 
-  fmt.Println(payload.PullRequest.Title)
+  body := payload.PullRequest.Body
+  extractNotionLink(body)
 
   // pageId := getIdFromUrl(cardLinked)
   // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
