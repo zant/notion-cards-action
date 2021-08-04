@@ -36,8 +36,11 @@ func main() {
   // client := notion.NewClient(os.Getenv("NOTION_KEY"))
 
   path := os.Getenv("GITHUB_EVENT_PATH")
+  if _, err := os.Stat(path); os.IsNotExist(err) {
+    fmt.Println(path, "Does not exists")
+  }
   // payload := github.PullRequestPayload{}
-  fmt.Println(path)
+  fmt.Println(path, "Exists")
   // data, err := ioutil.ReadFile(path)
   // check(err)
 
