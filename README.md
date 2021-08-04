@@ -10,9 +10,9 @@ on: [pull_request]
 jobs:
   update_card:
     runs-on: ubuntu-latest
-    name: A test
+    name: Updates Notion Card
     steps:
-      - name: Updates card
+      - name: Updates to Code Review
         uses: zant/notion-cards-action@main
         env:
           NOTION_KEY: --- 
