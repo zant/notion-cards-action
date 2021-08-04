@@ -3,6 +3,7 @@ package main
 import (
   "context"
   "encoding/json"
+  "fmt"
   "log"
   "net/http"
   "os"
@@ -32,6 +33,7 @@ const (
 )
 
 func getJson(url string, target interface{}) error {
+  fmt.Println(url)
   httpClient := &http.Client{}
   r, err := httpClient.Get(url)
   if err != nil {
