@@ -1,0 +1,6 @@
+# action.yml
+name: 'Notion Cards'
+description: "Update Notion cards' status based on events"
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
