@@ -1,14 +1,11 @@
 package main
 
 import (
-  "encoding/json"
   "fmt"
-  "io/ioutil"
   "log"
   "os"
   "strings"
 
-  "github.com/go-playground/webhooks/v6/github"
   "github.com/joho/godotenv"
 )
 
@@ -39,13 +36,14 @@ func main() {
   // client := notion.NewClient(os.Getenv("NOTION_KEY"))
 
   path := os.Getenv("GITHUB_EVENT_PATH")
-  payload := github.PullRequestPayload{}
-  data, err := ioutil.ReadFile(path)
-  check(err)
+  // payload := github.PullRequestPayload{}
+  fmt.Println(path)
+  // data, err := ioutil.ReadFile(path)
+  // check(err)
 
-  json.Unmarshal(data, &payload)
+  // json.Unmarshal(data, &payload)
 
-  fmt.Println(payload.PullRequest.Body)
+  // fmt.Println(payload.PullRequest.Body)
 
   // pageId := getIdFromUrl(cardLinked)
   // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
