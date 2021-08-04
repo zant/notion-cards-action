@@ -1,20 +1,22 @@
 package main
 
 import (
+  "context"
   "encoding/json"
   "fmt"
   "io/ioutil"
   "log"
   "os"
   "regexp"
-  "strings"
 
+  "github.com/dstotijn/go-notion"
   "github.com/go-playground/webhooks/v6/github"
   "github.com/joho/godotenv"
 )
 
+// Extracts last 32 digits
 func getIdFromUrl(page string) string {
-  return strings.Split(page, "Card-")[1]
+  return page[len(page)-32:]
 }
 
 type Page struct {
@@ -23,15 +25,16 @@ type Page struct {
 
 type CardStatus string
 
-func extractNotionLink(body string) {
+func extractNotionLink(body string) string {
   markdownRegex := regexp.MustCompile(`\[[^][]+]\((https?://(www.notion.so|notion.so)[^()]+)\)`)
   results := markdownRegex.FindAllStringSubmatch(body, -1)
-  for v := range results {
-    fmt.Printf("%q\n", results[v][1])
+  if len(results) < 1 {
+    log.Fatalf("No Notion URL was found")
+  } else if len(results) > 1 {
+    log.Fatalf("Please link only one Notion URL")
   }
+  return results[0][1]
 }
-
-const cardLinked = "https://www.notion.so/Card-ef2e02bf5f0f4a37a6c7fe48ff5de280"
 
 const (
   CardStatusCodeReview CardStatus = "Code Review"
@@ -47,7 +50,7 @@ func check(err error) {
 
 func main() {
   godotenv.Load()
-  // client := notion.NewClient(os.Getenv("NOTION_KEY"))
+  notionClient := notion.NewClient(os.Getenv("NOTION_KEY"))
 
   payload := github.PullRequestPayload{}
 
@@ -62,22 +65,22 @@ func main() {
   json.Unmarshal(data, &payload)
 
   body := payload.PullRequest.Body
-  extractNotionLink(body)
+  url := extractNotionLink(body)
 
-  // pageId := getIdFromUrl(cardLinked)
-  // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
-  // params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
-  // page, err := client.UpdatePageProps(context.Background(), pageId, params)
-  // check(err)
+  pageId := getIdFromUrl(url)
+  databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
+  params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
+  page, err := notionClient.UpdatePageProps(context.Background(), pageId, params)
+  check(err)
 
   // Create Page
   // databasePageProperties := notion.DatabasePageProperties{"title": notion.DatabasePageProperty{Title: []notion.RichText{{Text: &notion.Text{Content: "New card"}}}}}
   // params := notion.CreatePageParams{ParentID: databaseId, ParentType: notion.ParentTypeDatabase, DatabasePageProperties: &databasePageProperties}
   // page, err := client.CreatePage(context.Background(), params)
 
-  // properties := page.Properties.(notion.DatabasePageProperties)
-  // status := properties["Status"].Select.Name
-  // title := properties["Name"].Title[0].Text.Content
+  properties := page.Properties.(notion.DatabasePageProperties)
+  status := properties["Status"].Select.Name
+  title := properties["Name"].Title[0].Text.Content
 
-  // log.Println("\""+title+"\"", "successfully updated to:", status)
+  log.Println("\""+title+"\"", "successfully updated to:", status)
 }
