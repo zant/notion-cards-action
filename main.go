@@ -1,11 +1,14 @@
 package main
 
 import (
+  "encoding/json"
   "fmt"
+  "io/ioutil"
   "log"
   "os"
   "strings"
 
+  "github.com/go-playground/webhooks/v6/github"
   "github.com/joho/godotenv"
 )
 
@@ -28,25 +31,28 @@ const (
 )
 
 func check(err error) {
-  log.Fatalf("Error: %s", err)
+  if err != nil {
+    log.Fatalf("Error: %s", err)
+  }
 }
 
 func main() {
   godotenv.Load()
   // client := notion.NewClient(os.Getenv("NOTION_KEY"))
 
+  payload := github.PullRequestPayload{}
+
   path := os.Getenv("GITHUB_EVENT_PATH")
   if _, err := os.Stat(path); os.IsNotExist(err) {
     fmt.Println(path, "Does not exists")
   }
-  // payload := github.PullRequestPayload{}
-  fmt.Println(path, "Exists")
-  // data, err := ioutil.ReadFile(path)
-  // check(err)
 
-  // json.Unmarshal(data, &payload)
+  data, err := ioutil.ReadFile(path)
+  check(err)
 
-  // fmt.Println(payload.PullRequest.Body)
+  json.Unmarshal(data, &payload)
+
+  fmt.Println(payload.PullRequest.Body)
 
   // pageId := getIdFromUrl(cardLinked)
   // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
