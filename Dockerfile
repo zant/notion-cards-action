@@ -19,4 +19,4 @@ RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /app .
 
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/app/main"]
