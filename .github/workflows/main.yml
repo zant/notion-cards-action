@@ -2,7 +2,7 @@ on: [pull_request]
 
 jobs:
   update_card:
-    runs-on: ubuntu-latest 
+    runs-on: alpine-latest
     name: A test
     steps:
       - name: Updates card
