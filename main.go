@@ -73,11 +73,6 @@ func main() {
   page, err := notionClient.UpdatePageProps(context.Background(), pageId, params)
   check(err)
 
-  // Create Page
-  // databasePageProperties := notion.DatabasePageProperties{"title": notion.DatabasePageProperty{Title: []notion.RichText{{Text: &notion.Text{Content: "New card"}}}}}
-  // params := notion.CreatePageParams{ParentID: databaseId, ParentType: notion.ParentTypeDatabase, DatabasePageProperties: &databasePageProperties}
-  // page, err := client.CreatePage(context.Background(), params)
-
   properties := page.Properties.(notion.DatabasePageProperties)
   status := properties["Status"].Select.Name
   title := properties["Name"].Title[0].Text.Content
