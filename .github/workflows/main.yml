@@ -1,0 +1,9 @@
+on: [pull_request]
+
+jobs:
+  update_card:
+    runs-on: ubuntu-latest 
+    name: A test
+    steps:
+      - name: Updates card
+        uses: zant/notion-cards-action
