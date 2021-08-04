@@ -1,7 +1,6 @@
 package main
 
 import (
-  "context"
   "encoding/json"
   "fmt"
   "io/ioutil"
@@ -9,7 +8,6 @@ import (
   "os"
   "strings"
 
-  "github.com/dstotijn/go-notion"
   "github.com/go-playground/webhooks/v6/github"
   "github.com/joho/godotenv"
 )
@@ -33,12 +31,12 @@ const (
 )
 
 func check(err error) {
-  log.Fatalf("Error %s", err)
+  log.Fatalf("Error: %s", err)
 }
 
 func main() {
   godotenv.Load()
-  client := notion.NewClient(os.Getenv("NOTION_KEY"))
+  // client := notion.NewClient(os.Getenv("NOTION_KEY"))
 
   path := os.Getenv("GITHUB_EVENT_PATH")
   payload := github.PullRequestPayload{}
@@ -47,22 +45,22 @@ func main() {
 
   json.Unmarshal(data, &payload)
 
-  fmt.Println(payload)
+  fmt.Println(payload.PullRequest.Body)
 
-  pageId := getIdFromUrl(cardLinked)
-  databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
-  params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
-  page, err := client.UpdatePageProps(context.Background(), pageId, params)
-  check(err)
+  // pageId := getIdFromUrl(cardLinked)
+  // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
+  // params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
+  // page, err := client.UpdatePageProps(context.Background(), pageId, params)
+  // check(err)
 
   // Create Page
   // databasePageProperties := notion.DatabasePageProperties{"title": notion.DatabasePageProperty{Title: []notion.RichText{{Text: &notion.Text{Content: "New card"}}}}}
   // params := notion.CreatePageParams{ParentID: databaseId, ParentType: notion.ParentTypeDatabase, DatabasePageProperties: &databasePageProperties}
   // page, err := client.CreatePage(context.Background(), params)
 
-  properties := page.Properties.(notion.DatabasePageProperties)
-  status := properties["Status"].Select.Name
-  title := properties["Name"].Title[0].Text.Content
+  // properties := page.Properties.(notion.DatabasePageProperties)
+  // status := properties["Status"].Select.Name
+  // title := properties["Name"].Title[0].Text.Content
 
-  log.Println("\""+title+"\"", "successfully updated to:", status)
+  // log.Println("\""+title+"\"", "successfully updated to:", status)
 }
