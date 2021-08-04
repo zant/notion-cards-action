@@ -52,7 +52,7 @@ func main() {
 
   json.Unmarshal(data, &payload)
 
-  fmt.Println(payload.PullRequest.Body)
+  fmt.Println(payload.PullRequest.Title)
 
   // pageId := getIdFromUrl(cardLinked)
   // databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
