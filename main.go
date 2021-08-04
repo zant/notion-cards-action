@@ -4,8 +4,8 @@ import (
   "context"
   "encoding/json"
   "fmt"
+  "io/ioutil"
   "log"
-  "net/http"
   "os"
   "strings"
 
@@ -32,18 +32,7 @@ const (
   CardStatusReleased   CardStatus = "Released"
 )
 
-func getJson(url string, target interface{}) error {
-  fmt.Println(url)
-  httpClient := &http.Client{}
-  r, err := httpClient.Get(url)
-  if err != nil {
-    return err
-  }
-  defer r.Body.Close()
-  return json.NewDecoder(r.Body).Decode(target)
-}
-
-func handleError(err error) {
+func check(err error) {
   log.Fatalf("Error %s", err)
 }
 
@@ -53,14 +42,18 @@ func main() {
 
   path := os.Getenv("GITHUB_EVENT_PATH")
   payload := github.PullRequestPayload{}
-  err := getJson(path, payload)
-  handleError(err)
+  data, err := ioutil.ReadFile(path)
+  check(err)
+
+  json.Unmarshal(data, &payload)
+
+  fmt.Println(payload)
 
   pageId := getIdFromUrl(cardLinked)
   databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
   params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
   page, err := client.UpdatePageProps(context.Background(), pageId, params)
-  handleError(err)
+  check(err)
 
   // Create Page
   // databasePageProperties := notion.DatabasePageProperties{"title": notion.DatabasePageProperty{Title: []notion.RichText{{Text: &notion.Text{Content: "New card"}}}}}
