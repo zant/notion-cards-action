@@ -6,4 +6,4 @@ jobs:
     name: A test
     steps:
       - name: Updates card
-        uses: zant/notion-cards-action
+        uses: zant/notion-cards-action@main
