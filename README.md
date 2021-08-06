@@ -30,6 +30,9 @@ jobs:
     steps:
       - name: Updates to Code Review
         uses: zant/notion-cards-action@main
+        with:
+          page-property: 'Status'
+          on-pr: 'Code Review'
         env:
           NOTION_KEY: --- 
           NOTION_DATABASE_ID: ---
