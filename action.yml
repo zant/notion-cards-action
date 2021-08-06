@@ -1,6 +1,9 @@
 # action.yml
 name: 'Notion Cards'
 description: "Update Notion cards' status based on events"
+branding:
+  icon: 'align-justify'  
+  color: 'blue'
 inputs:
   page_property:  # id of input
     description: 'The name of the property to update. Default is "Status"'
