@@ -23,8 +23,6 @@ type Page struct {
   Name string
 }
 
-type CardStatus string
-
 func extractNotionLink(body string) string {
   markdownRegex := regexp.MustCompile(`\[[^][]+]\((https?://(www.notion.so|notion.so)[^()]+)\)`)
   results := markdownRegex.FindAllStringSubmatch(body, -1)
@@ -35,6 +33,22 @@ func extractNotionLink(body string) string {
   }
   return results[0][1]
 }
+
+type CardStatus string
+type GithubEnvironmentVariable string
+type InputDefaults string
+
+const (
+  NotionKey         GithubEnvironmentVariable = "NOTION_KEY"
+  GitHubEventPath   GithubEnvironmentVariable = "GITHUB_EVENT_PATH"
+  InputPageProperty GithubEnvironmentVariable = "INPUT_PAGE_PROPERTY"
+  InputOnPR         GithubEnvironmentVariable = "INPUT_ON_PR"
+)
+
+const (
+  InputPagePropertyDefault InputDefaults = "Status"
+  InputOnPRDefault         InputDefaults = "Code Review"
+)
 
 const (
   CardStatusCodeReview CardStatus = "Code Review"
@@ -48,13 +62,31 @@ func check(err error) {
   }
 }
 
+func inputFromEnv(input GithubEnvironmentVariable) string {
+  env := os.Getenv(string(input))
+  switch input {
+  case InputPageProperty:
+    if env == "" {
+      return string(InputPagePropertyDefault)
+    }
+    return env
+  case InputOnPR:
+    if env == "" {
+      return string(InputOnPRDefault)
+    }
+    return env
+  default:
+    return ""
+  }
+}
+
 func main() {
   godotenv.Load()
-  notionClient := notion.NewClient(os.Getenv("NOTION_KEY"))
+  notionClient := notion.NewClient(os.Getenv(string(NotionKey)))
 
   payload := github.PullRequestPayload{}
 
-  path := os.Getenv("GITHUB_EVENT_PATH")
+  path := os.Getenv(string(GitHubEventPath))
   if _, err := os.Stat(path); os.IsNotExist(err) {
     fmt.Println(path, "Does not exists")
   }
@@ -68,7 +100,13 @@ func main() {
   url := extractNotionLink(body)
 
   pageId := getIdFromUrl(url)
-  databasePageProperties := &notion.DatabasePageProperties{"Status": notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: string(CardStatusCodeReview)}}}
+
+  inputOnPr := inputFromEnv(InputOnPR)
+  propertyToUpdate := notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: inputOnPr}}
+
+  inputPageProperty := inputFromEnv(InputPageProperty)
+  databasePageProperties := &notion.DatabasePageProperties{inputPageProperty: propertyToUpdate}
+
   params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
   page, err := notionClient.UpdatePageProps(context.Background(), pageId, params)
   check(err)
