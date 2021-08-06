@@ -10,8 +10,8 @@ This card updates a property from a page linked in a PR description. Commonly us
 **Inputs**
 | Key | Description |
 |-------|-------|
-| PAGE_PROPERTY | The name of the property to update. Default is "Status" |
-| ON_PR | The value of PAGE_PROPERTY to be updated on PR event. Default is "Code Review" |
+| page-property | The name of the property to update. Default is "Status" |
+| on-pr | The value of PAGE_PROPERTY to be updated on PR event. Default is "Code Review" |
 
 ## Example usage
 
