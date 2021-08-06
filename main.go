@@ -64,7 +64,6 @@ func check(err error) {
 
 func inputFromEnv(input GithubEnvironmentVariable) string {
   env := os.Getenv(string(input))
-  fmt.Println(env)
   switch input {
   case InputPageProperty:
     if env == "" {
