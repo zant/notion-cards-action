@@ -1,0 +1,15 @@
+on: [pull_request]
+
+jobs:
+  update_card:
+    runs-on: ubuntu-latest
+    name: Updates Notion Card
+    steps:
+      - name: Updates to Code Review
+        uses: zant/notion-cards-action@main
+        with:
+          PAGE_PROPERTY: 'Status'
+          ON_PR: 'Code Review'
+        env:
+          NOTION_KEY: --- 
+          NOTION_DATABASE_ID: ---
