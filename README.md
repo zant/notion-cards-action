@@ -1,6 +1,6 @@
 # Notion Cards GH Action
 
-This card updates a property from a page linked in a PR description. Commonly used to update the "Status" property of a card used to keep track of features.
+This card updates a property from a page linked in a PR description. Commonly used to update the "Status" property of a card used to keep track of features
 
 **Variables**
 | Key | Description |
