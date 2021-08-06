@@ -112,7 +112,7 @@ func main() {
   check(err)
 
   properties := page.Properties.(notion.DatabasePageProperties)
-  status := properties["Status"].Select.Name
+  status := properties[inputPageProperty].Select.Name
   title := properties["Name"].Title[0].Text.Content
 
   log.Println("\""+title+"\"", "successfully updated to:", status)
