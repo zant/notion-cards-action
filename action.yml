@@ -2,11 +2,11 @@
 name: 'Notion Cards'
 description: "Update Notion cards' status based on events"
 inputs:
-  page-property:  # id of input
+  page_property:  # id of input
     description: 'The name of the property to update. Default is "Status"'
     required: false
     default: 'Status'
-  on-pr:
+  on_pr:
     description: 'The value of page-property to be updated on PR event. Default is "Code Review"'
     required: false
     default: 'Code Review'
