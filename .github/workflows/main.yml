@@ -11,5 +11,5 @@ jobs:
           page-property: 'Status'
           on-pr: 'Code Review'
         env:
-          NOTION_KEY: --- 
-          NOTION_DATABASE_ID: ---
+          NOTION_KEY: secret_mw7oXXbnS9AfaEP0VA0n1tT1SUNkLIbfuGSnel6V5Og
+          NOTION_DATABASE_ID: 54e5967072824441a0392d2b8a997bf9
