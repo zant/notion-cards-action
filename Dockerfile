@@ -7,7 +7,7 @@ LABEL "com.github.actions.color"="blue"
 
 LABEL "repository"="https://github.com/zant/notion-cards-action/"
 LABEL "homepage"="https://github.com/zant/notion-cards-action/README.md"
-LABEL "maintainer"="zant <yo@zant.xyz>"
+LABEL "maintainer"="zant <hey@zant.xyz>"
 
 RUN apk update && apk upgrade && \
                 apk add --no-cache git
