@@ -10,8 +10,8 @@ This card updates a property from a page linked in a PR description. Commonly us
 **Inputs**
 | Key | Description |
 |-------|-------|
-| page-property | The name of the property to update. Default is "Status" |
-| on-pr | The value of PAGE_PROPERTY to be updated on PR event. Default is "Code Review" |
+| page_property | The name of the property to update. Default is "Status" |
+| on_pr | The value of PAGE_PROPERTY to be updated on PR event. Default is "Code Review" |
 
 ## Example usage
 
@@ -31,8 +31,8 @@ jobs:
       - name: Updates to Code Review
         uses: zant/notion-cards-action@main
         with:
-          page-property: 'Status'
-          on-pr: 'Code Review'
+          page_property: 'Status'
+          on_pr: 'Code Review'
         env:
           NOTION_KEY: --- 
           NOTION_DATABASE_ID: ---
