@@ -3,6 +3,7 @@ package main
 import (
   "context"
   "encoding/json"
+  "errors"
   "fmt"
   "io/ioutil"
   "log"
@@ -14,35 +15,19 @@ import (
   "github.com/joho/godotenv"
 )
 
-// Extracts last 32 digits
-func getIdFromUrl(page string) string {
-  return page[len(page)-32:]
-}
-
-type Page struct {
-  Name string
-}
-
-func extractNotionLink(body string) string {
-  markdownRegex := regexp.MustCompile(`\[[^][]+]\((https?://(www.notion.so|notion.so)[^()]+)\)`)
-  results := markdownRegex.FindAllStringSubmatch(body, -1)
-  if len(results) < 1 {
-    log.Fatalf("No Notion URL was found")
-  } else if len(results) > 1 {
-    log.Fatalf("Please link only one Notion URL")
-  }
-  return results[0][1]
-}
-
 type CardStatus string
 type GithubEnvironmentVariable string
 type InputDefaults string
+type Page struct {
+  Name string
+}
 
 const (
   NotionKey         GithubEnvironmentVariable = "NOTION_KEY"
   GitHubEventPath   GithubEnvironmentVariable = "GITHUB_EVENT_PATH"
   InputPageProperty GithubEnvironmentVariable = "INPUT_PAGE_PROPERTY"
   InputOnPR         GithubEnvironmentVariable = "INPUT_ON_PR"
+  InputOnMerge      GithubEnvironmentVariable = "INPUT_ON_MERGE"
 )
 
 const (
@@ -56,6 +41,22 @@ const (
   CardStatusReleased   CardStatus = "Released"
 )
 
+// Extracts last 32 digits
+func getIdFromUrl(page string) string {
+  return page[len(page)-32:]
+}
+
+func extractNotionLink(body string) string {
+  markdownRegex := regexp.MustCompile(`\[[^][]+]\((https?://(www.notion.so|notion.so)[^()]+)\)`)
+  results := markdownRegex.FindAllStringSubmatch(body, -1)
+  if len(results) < 1 {
+    log.Fatalf("No Notion URL was found")
+  } else if len(results) > 1 {
+    log.Fatalf("Please link only one Notion URL")
+  }
+  return results[0][1]
+}
+
 func check(err error) {
   if err != nil {
     log.Fatalf("Error: %s", err)
@@ -63,32 +64,45 @@ func check(err error) {
 }
 
 func inputFromEnv(input GithubEnvironmentVariable) string {
-  env := os.Getenv(string(input))
-  switch input {
-  case InputPageProperty:
-    if env == "" {
-      return string(InputPagePropertyDefault)
-    }
-    return env
-  case InputOnPR:
-    if env == "" {
-      return string(InputOnPRDefault)
-    }
-    return env
-  default:
-    return ""
+  return os.Getenv(string(input))
+}
+
+func updateCard(pageId string, key string, value string) {
+  notionClient := notion.NewClient(os.Getenv(string(NotionKey)))
+
+  valueToUpdate := notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: value}}
+
+  databasePageProperties := &notion.DatabasePageProperties{key: valueToUpdate}
+
+  params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
+  page, err := notionClient.UpdatePageProps(context.Background(), pageId, params)
+  check(err)
+
+  properties := page.Properties.(notion.DatabasePageProperties)
+  status := properties[key].Select.Name
+  title := properties["Name"].Title[0].Text.Content
+
+  log.Println("\""+title+"\"", "successfully updated to:", status)
+}
+
+func valueFromEvent(merged bool, closed bool) (string, error) {
+  if !merged && !closed {
+    return inputFromEnv(InputOnPR), nil
+  } else if merged && closed {
+    return inputFromEnv(InputOnMerge), nil
+  } else {
+    return "", errors.New("not supported")
   }
 }
 
 func main() {
   godotenv.Load()
-  notionClient := notion.NewClient(os.Getenv(string(NotionKey)))
 
   payload := github.PullRequestPayload{}
 
   path := os.Getenv(string(GitHubEventPath))
   if _, err := os.Stat(path); os.IsNotExist(err) {
-    fmt.Println(path, "Does not exists")
+    fmt.Println(path, "noes not exists")
   }
 
   data, err := ioutil.ReadFile(path)
@@ -96,24 +110,17 @@ func main() {
 
   json.Unmarshal(data, &payload)
 
+  // Values from PR payload
   body := payload.PullRequest.Body
-  url := extractNotionLink(body)
+  merged := payload.PullRequest.Merged
+  closed := payload.Action == "closed"
 
-  pageId := getIdFromUrl(url)
-
-  inputOnPr := inputFromEnv(InputOnPR)
-  propertyToUpdate := notion.DatabasePageProperty{Select: &notion.SelectOptions{Name: inputOnPr}}
-
-  inputPageProperty := inputFromEnv(InputPageProperty)
-  databasePageProperties := &notion.DatabasePageProperties{inputPageProperty: propertyToUpdate}
-
-  params := notion.UpdatePageParams{DatabasePageProperties: databasePageProperties}
-  page, err := notionClient.UpdatePageProps(context.Background(), pageId, params)
+  // What to update based on payload
+  key := inputFromEnv(InputPageProperty)
+  value, err := valueFromEvent(merged, closed)
   check(err)
 
-  properties := page.Properties.(notion.DatabasePageProperties)
-  status := properties[inputPageProperty].Select.Name
-  title := properties["Name"].Title[0].Text.Content
-
-  log.Println("\""+title+"\"", "successfully updated to:", status)
+  url := extractNotionLink(body)
+  pageId := getIdFromUrl(url)
+  updateCard(pageId, key, value)
 }
