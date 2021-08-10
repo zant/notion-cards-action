@@ -5,7 +5,7 @@ branding:
   icon: 'align-justify'  
   color: 'blue'
 inputs:
-  page_property:  # id of input
+  page_property: 
     description: 'The name of the property to update. Default is "Status"'
     required: false
     default: 'Status'
@@ -13,6 +13,10 @@ inputs:
     description: 'The value of page-property to be updated on PR event. Default is "Code Review"'
     required: false
     default: 'Code Review'
+  on_merge:
+    description: 'The value of page-property to be updated on PR MERGE event. Default is "QA Testing"'
+    required: false
+    default: 'QA Testing'
 runs:
   using: 'docker'
   image: 'Dockerfile'
