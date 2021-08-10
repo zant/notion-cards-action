@@ -11,7 +11,8 @@ jobs:
         uses: zant/notion-cards-action@main
         with:
           page_property: 'Status'
-          on_pr: 'Code Review 2'
+          on_pr: 'Code Review'
+          on_merge: 'Code Review 2'
         env:
           NOTION_KEY: secret_mw7oXXbnS9AfaEP0VA0n1tT1SUNkLIbfuGSnel6V5Og
           NOTION_DATABASE_ID: 54e5967072824441a0392d2b8a997bf9
