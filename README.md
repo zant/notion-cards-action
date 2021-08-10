@@ -21,7 +21,9 @@ This PR implements [Notion Card](www.notion.so/Card-1234)
 ```
 
 ```
-on: [pull_request]
+on: 
+  pull_request:
+    types: [opened, closed]
 
 jobs:
   update_card:
@@ -33,7 +35,8 @@ jobs:
         with:
           page_property: 'Status'
           on_pr: 'Code Review'
+          on_merge: 'Testing'
         env:
-          NOTION_KEY: --- 
+          NOTION_KEY: ---
           NOTION_DATABASE_ID: ---
 ```
