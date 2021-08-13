@@ -20,6 +20,8 @@ A regex match is performed over the PR body. It matches the first URL that has `
 
 ## Example usage
 
+See [main.yml](https://github.com/zant/notion-cards-action/blob/main/.github/workflows/main.yml) in this repo.
+
 On PR body:
 ```
 This PR implements [Notion Card](www.notion.so/Card-1234)
