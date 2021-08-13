@@ -1,0 +1,17 @@
+on:
+  pull_request:
+    types: [opened, closed]
+
+jobs:
+  update_card:
+    runs-on: ubuntu-latest
+    name: Updates Notion Card
+    steps:
+      - name: Updates to Code Review
+        uses: zant/notion-cards-action@main
+        with:
+          page_property: 'Status'
+          on_pr: 'Code Review 2'
+          on_merge: 'Testing'
+        env:
+          NOTION_KEY: ${{ secrets.NotionKey }} 
