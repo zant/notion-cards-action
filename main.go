@@ -61,7 +61,7 @@ func extractNotionLink(body string) string {
 
 func check(err error) {
   if err != nil {
-    log.Fatalf("Error: %s", err)
+    fmt.Println("Error: %s", err)
   }
 }
 
@@ -84,7 +84,7 @@ func updateCard(pageId string, key string, value string) {
   status := properties[key].Select.Name
   title := properties["Name"].Title[0].Text.Content
 
-  log.Println("\""+title+"\"", "successfully updated to:", status)
+  fmt.Println("\""+title+"\"", "successfully updated to:", status)
 }
 
 func valueFromEvent(merged bool, closed bool) (string, error) {
