@@ -39,5 +39,4 @@ jobs:
           on_merge: 'Testing'
         env:
           NOTION_KEY: ---
-          NOTION_DATABASE_ID: ---
 ```
