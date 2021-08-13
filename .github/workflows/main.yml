@@ -14,4 +14,4 @@ jobs:
           on_pr: 'Code Review 2'
           on_merge: 'Testing'
         env:
-          NOTION_KEY: ${{ secrets.NOTION_KEY }} 
+          NOTION_KEY: ${{ secrets.NotionKey }} 
