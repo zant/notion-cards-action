@@ -4,7 +4,7 @@ This card updates a property from a page linked in a PR description. Commonly us
 
 **How does it works?**
 
-A regex match is performed over th PR body. It matches the first URL that has `notion.so` format in it, and then the ID of the Card is extracted from the URL.
+A regex match is performed over the PR body. It matches the first URL that has `notion.so` format in it, and then the ID of the Card is extracted from the URL.
 
 
 **Variables**
